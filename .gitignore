@@ -1,0 +1,2 @@
+# Ignore local terraform init files
+.terraform/

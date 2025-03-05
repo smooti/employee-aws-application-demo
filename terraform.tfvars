@@ -28,8 +28,8 @@ ingress_rules = {
 }
 egress_rules = {
   all_outbound = {
-    from_port   = 0
-    to_port     = 0
+    from_port   = null
+    to_port     = null
     ip_protocol = "-1"
     cidr_ipv4   = "0.0.0.0/0"
   }

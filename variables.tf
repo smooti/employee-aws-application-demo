@@ -11,6 +11,13 @@ variable "azs" {
   default     = ["us-east-1a", "us-east-1b"]
 }
 
+# EC2 Variables
+variable "ec2_instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t2.micro"
+}
+
 # VPC Variables
 variable "vpc_name" {
   description = "Name of VPC"

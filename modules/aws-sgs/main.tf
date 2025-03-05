@@ -2,7 +2,9 @@ provider "aws" {
   region = var.region
 }
 
+# Create AWS security group
 resource "aws_security_group" "ec2_sg" {
+	vpc_id      = var.vpc_id
   name        = var.security_group_name
   description = var.security_group_description
 

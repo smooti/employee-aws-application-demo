@@ -65,3 +65,9 @@ variable "egress_rules" {
     }
   }
 }
+
+variable "vpc_id" {
+  description = "ID of VPC"
+  type        = string
+  default     = "Security group for EC2 instance"
+}

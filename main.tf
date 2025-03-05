@@ -14,6 +14,7 @@ module "vpc" {
 module "sgs" {
   source                     = "./modules/aws-sgs"
   region                     = var.region
+  vpc_id                     = module.vpc.vpc_id
   security_group_name        = var.security_group_name
   security_group_description = var.security_group_description
   ingress_rules              = var.ingress_rules

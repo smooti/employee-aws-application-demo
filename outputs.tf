@@ -1,3 +1,4 @@
+# VPC outputs
 output "vpc_id" {
   description = "ID of the VPC"
   value       = module.vpc.vpc_id
@@ -16,4 +17,10 @@ output "private_subnets_id" {
 output "security_group_name" {
   description = "The name of the security group"
   value       = module.sgs.security_group_name
+}
+
+# EC2 outputs
+output "instance_ip_addr" {
+  description = "Public IP address of ec2 instance"
+  value       = aws_instance.employee-web-app.public_ip
 }

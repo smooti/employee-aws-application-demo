@@ -21,20 +21,20 @@ module "sgs" {
   egress_rules               = var.egress_rules
 }
 
-# # Create ec2 instance
-# resource "aws_instance" "employee-web-app" {
-#   depends_on = [aws_security_group.allow_http_https] # This first depends on the security group to exist
+# Create ec2 instance
+resource "aws_instance" "employee-web-app" {
+  depends_on = [module.sgs] # This first depends on the security group to exist
 
-#   ami                         = "ami-05b10e08d247fb927" # Amazon Linux
-#   instance_type               = var.ec2_instance_type
-#   vpc_security_group_ids      = [module.sgs.security_group_id]
-#   subnet_id                   = aws_subnet.public-subnet-1.id
-#   associate_public_ip_address = true
-#   iam_instance_profile        = "EmployeeWebAppRole" # Has Amazons S3 and Amazon DynamoDB FullAccess
-#   user_data_base64            = filebase64("${path.root}/user-data")
-#   user_data_replace_on_change = true
+  ami                         = "ami-05b10e08d247fb927" # Amazon Linux
+  instance_type               = var.ec2_instance_type
+  vpc_security_group_ids      = [module.sgs.security_group_id]
+  subnet_id                   = module.vpc.public_subnets_id[0]
+  associate_public_ip_address = true
+  iam_instance_profile        = "EmployeeWebAppRole" # Has Amazons S3 and Amazon DynamoDB FullAccess
+  user_data_base64            = filebase64("${path.root}/user-data")
+  user_data_replace_on_change = true
 
-#   tags = {
-#     Name = "employee-web-app"
-#   }
-# }
+  tags = {
+    Name = "employee-web-app"
+  }
+}

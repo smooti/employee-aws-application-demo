@@ -12,3 +12,8 @@ output "private_subnets_id" {
   description = "List of private subnet IDs"
   value       = module.vpc.private_subnets_id
 }
+
+output "security_group_name" {
+  description = "The name of the security group"
+  value       = module.sgs.security_group_name
+}

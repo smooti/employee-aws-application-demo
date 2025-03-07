@@ -30,9 +30,10 @@ resource "aws_s3_bucket" "photos" {
   }
 }
 
+# Creat DynamoDB table for user profile data
 resource "aws_dynamodb_table" "basic-dynamodb-table" {
   name         = "Employees"
-  hash_key     = "id" # Partition key
+  hash_key     = "id"              # Partition key
   billing_mode = "PAY_PER_REQUEST" # On-demand
 
   attribute {
@@ -42,6 +43,10 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
 
   tags = {
     Name = "Employees"
+  }
+
+  lifecycle {
+    prevent_destroy = true
   }
 }
 

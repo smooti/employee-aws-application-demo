@@ -24,6 +24,7 @@ module "sgs" {
 # Create S3 bucket for user image storage
 resource "aws_s3_bucket" "photos" {
   bucket = "employee-photo-bucket-rko-493"
+	force_destroy = true
 
   tags = {
     Name = "employee-photo-bucket-rko-493"
@@ -45,9 +46,9 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
     Name = "Employees"
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 # Create EC2 instance

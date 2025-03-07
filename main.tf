@@ -21,17 +21,29 @@ module "sgs" {
   egress_rules               = var.egress_rules
 }
 
+# Create S3 bucket for user image storage
+resource "aws_s3_bucket" "photos" {
+  bucket = "employee-photo-bucket-rko-493"
+
+  tags = {
+    Name = "employee-photo-bucket-rko-493"
+  }
+}
+
 # Create ec2 instance
 resource "aws_instance" "employee-web-app" {
-  depends_on = [module.sgs] # This first depends on the security group to exist
+  depends_on = [
+    module.sgs,          # This first depends on the security group to exist
+    aws_s3_bucket.photos # Where the application will store user images
+  ]
 
   ami                         = "ami-05b10e08d247fb927" # Amazon Linux
   instance_type               = var.ec2_instance_type
+  iam_instance_profile        = "EmployeeWebAppRole" # Has Amazons S3 and Amazon DynamoDB FullAccess
   vpc_security_group_ids      = [module.sgs.security_group_id]
   subnet_id                   = module.vpc.public_subnets_id[0]
   associate_public_ip_address = true
-  iam_instance_profile        = "EmployeeWebAppRole" # Has Amazons S3 and Amazon DynamoDB FullAccess
-  user_data_base64            = filebase64("${path.root}/user-data")
+  user_data                   = templatefile("${path.root}/resources/user-data.tftpl", { photos-bucket = aws_s3_bucket.photos.id })
   user_data_replace_on_change = true
 
   tags = {

@@ -30,7 +30,22 @@ resource "aws_s3_bucket" "photos" {
   }
 }
 
-# Create ec2 instance
+resource "aws_dynamodb_table" "basic-dynamodb-table" {
+  name         = "Employees"
+  hash_key     = "id" # Partition key
+  billing_mode = "PAY_PER_REQUEST" # On-demand
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+
+  tags = {
+    Name = "Employees"
+  }
+}
+
+# Create EC2 instance
 resource "aws_instance" "employee-web-app" {
   depends_on = [
     module.sgs,          # This first depends on the security group to exist

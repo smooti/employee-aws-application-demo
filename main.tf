@@ -1,24 +1,22 @@
-# Create IAM resource
-resource "aws_iam_role" "web-app" {
-  name = "EmployeeWebAppRole"
+# Specify EC2 Instance role policy
+data "aws_iam_policy_document" "instance_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
 
-  # Terraform's "jsonencode" function converts a
-  # Terraform expression result to valid JSON syntax.
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect : "Allow",
-        Principal : {
-          Service : "ec2.amazonaws.com"
-        },
-        Action : "sts:AssumeRole"
-      }
-    ]
-  })
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+# Create IAM Role
+resource "aws_iam_role" "web-app" {
+  name = "S3DynamoDBFullAccessRole"
+  assume_role_policy = data.aws_iam_policy_document.instance_assume_role_policy.json
 
   tags = {
-    Name = "EmployeeWebAppRole"
+    Name = "S3DynamoDBFullAccessRole"
   }
 }
 
@@ -30,6 +28,12 @@ resource "aws_iam_role_policy_attachment" "amazon-dynamodb-full-access" {
 resource "aws_iam_role_policy_attachment" "amazon-s3-full-access" {
   role       = aws_iam_role.web-app.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess" # Built-in policy
+}
+
+# Create instance-profile from role
+resource "aws_iam_instance_profile" "profile" {
+  name = aws_iam_role.web-app.name
+  role = aws_iam_role.web-app.name
 }
 
 # Create a VPC with public and private subnets spanning multiple availability zones
@@ -88,8 +92,9 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
 # Create EC2 instance
 resource "aws_instance" "employee-web-app" {
   depends_on = [
-    module.sgs,          # This first depends on the security group to exist
-    aws_s3_bucket.photos # Where the application will store user images
+    aws_iam_role.web-app, # Role for AWS resource access
+    module.sgs,           # This first depends on the security group to exist
+    aws_s3_bucket.photos  # Where the application will store user images
   ]
 
   ami                         = "ami-05b10e08d247fb927" # Amazon Linux

@@ -18,6 +18,12 @@ variable "ec2_instance_type" {
   default     = "t2.micro"
 }
 
+variable "ec2_image_id" {
+  description = "Amazon Machine Image (AMI) ID"
+  type        = string
+  default     = "ami-05b10e08d247fb927" # Amazon Linux
+}
+
 # VPC Variables
 variable "vpc_name" {
   description = "Name of VPC"

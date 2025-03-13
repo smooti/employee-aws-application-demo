@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "instance_assume_role_policy" {
 
 # Create IAM Role
 resource "aws_iam_role" "web-app" {
-  name = "S3DynamoDBFullAccessRole"
+  name               = "S3DynamoDBFullAccessRole"
   assume_role_policy = data.aws_iam_policy_document.instance_assume_role_policy.json
 
   tags = {
@@ -49,7 +49,7 @@ module "vpc" {
 }
 
 # Create security group
-module "sgs" {
+module "web" {
   source                     = "./modules/aws-sgs"
   region                     = var.region
   vpc_id                     = module.vpc.vpc_id
@@ -89,24 +89,24 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
   # }
 }
 
-# Create EC2 instance
-resource "aws_instance" "employee-web-app" {
-  depends_on = [
-    aws_iam_role.web-app, # Role for AWS resource access
-    module.sgs,           # This first depends on the security group to exist
-    aws_s3_bucket.photos  # Where the application will store user images
-  ]
+# # Create EC2 instance
+# resource "aws_instance" "employee-web-app" {
+#   depends_on = [
+#     aws_iam_role.web-app, # Role for AWS resource access
+#     module.web,           # This first depends on the security group to exist
+#     aws_s3_bucket.photos  # Where the application will store user images
+#   ]
 
-  ami                         = "ami-05b10e08d247fb927" # Amazon Linux
-  instance_type               = var.ec2_instance_type
-  iam_instance_profile        = aws_iam_role.web-app.name # Has Amazons S3 and Amazon DynamoDB FullAccess
-  vpc_security_group_ids      = [module.sgs.security_group_id]
-  subnet_id                   = module.vpc.public_subnets_id[0]
-  associate_public_ip_address = true
-  user_data                   = templatefile("${path.root}/resources/user-data.tftpl", { photos-bucket = aws_s3_bucket.photos.id })
-  user_data_replace_on_change = true
+#   ami                         = var.ec2_image_id
+#   instance_type               = var.ec2_instance_type
+#   iam_instance_profile        = aws_iam_role.web-app.name # Has Amazons S3 and Amazon DynamoDB FullAccess
+#   vpc_security_group_ids      = [module.web.security_group_id]
+#   subnet_id                   = module.vpc.public_subnets_id[0]
+#   associate_public_ip_address = true
+#   user_data                   = templatefile("${path.root}/resources/user-data.tftpl", { photos-bucket = aws_s3_bucket.photos.id })
+#   user_data_replace_on_change = true
 
-  tags = {
-    Name = "employee-web-app"
-  }
-}
+#   tags = {
+#     Name = "employee-web-app"
+#   }
+# }
